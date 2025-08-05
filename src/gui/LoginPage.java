@@ -75,7 +75,7 @@ public class LoginPage implements ActionListener {
             if(userID.equals("232115314")){
                 if(pass.equals("quesera")) {
                     frame.dispose();
-                    //adminMainpage amp = new adminMainpage();
+                    adminMainpage amp = new adminMainpage();
                     //patientMainpage pmp = new patientMainpage();
                     //doctorMainpage dmp = new doctorMainpage();
                     //pharmacyMainpage pmp = new pharmacyMainpage();
