@@ -1,18 +1,20 @@
 package gui;
 
-import gui.mainpage.admin.adminMainpage;
-import gui.mainpage.doctor.doctorMainpage;
-import gui.mainpage.helpdesk.helpdeskMainpage;
-import gui.mainpage.lab.labMainpage;
+import database.ConLogin;
+import gui.mainpage.admin.*;
+import gui.mainpage.doctor.*;
+import gui.mainpage.helpdesk.*;
+import gui.mainpage.lab.*;
 import gui.mainpage.patient.*;
-import gui.mainpage.pharmacy.pharmacyMainpage;
-import gui.mainpage.radiology.radiologyMainpage;
+import gui.mainpage.pharmacy.*;
+import gui.mainpage.radiology.*;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 
 public class LoginPage implements ActionListener {
 
@@ -72,38 +74,64 @@ public class LoginPage implements ActionListener {
         if(e.getSource() == lButton){
             String userID = userTextField.getText();
             String pass = passwordField.getText();
-            if(userID.equals("232115314")){
-                if(pass.equals("quesera")) {
-                    frame.dispose();
-                    adminMainpage amp = new adminMainpage();
-                    //patientMainpage pmp = new patientMainpage();
-                    //doctorMainpage dmp = new doctorMainpage();
-                    //pharmacyMainpage pmp = new pharmacyMainpage();
-                    //labMainpage lmp = new labMainpage();
-                    //radiologyMainpage rmp = new radiologyMainpage();
-                    //helpdeskMainpage hdmp = new helpdeskMainpage();
-                }
-                else if(pass.equals("")){
-                    JOptionPane message1 = new JOptionPane();
-                    message1.showMessageDialog(null, "Enter password!", "Error", JOptionPane.INFORMATION_MESSAGE);
-                }
-                else{
-                    JOptionPane message2 = new JOptionPane();
-                    message2.showMessageDialog(null, "Wrong Password", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+
+            if(userID.equals("")){
+                JOptionPane message1 = new JOptionPane();
+                message1.showMessageDialog(null, "Enter User ID!", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
-            else if(userID.equals("")){
-                JOptionPane message3 = new JOptionPane();
-                message3.showMessageDialog(null, "Enter user name!", "Error", JOptionPane.INFORMATION_MESSAGE);
+            else if(pass.equals("")){
+                JOptionPane message2 = new JOptionPane();
+                message2.showMessageDialog(null, "Enter Password!", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
             else {
-                JOptionPane message4 = new JOptionPane();
-                message4.showMessageDialog(null, "Wrong User ID", "Error", JOptionPane.ERROR_MESSAGE);
+                try {
+                    ConLogin cl = new ConLogin();
+                    String q = "SELECT * FROM login WHERE user_id = " + userID + " AND user_pass = \"" +pass+ "\"";
+                    ResultSet resultSet = cl.statement.executeQuery(q);
+
+                    if (resultSet.next()) {
+                        frame.dispose();
+                        String role = resultSet.getString(3);
+                        if(role.equals("Admin")) {
+                            new adminMainpage();
+                        }
+                        else if(role.equals("Patient")) {
+                            new patientMainpage();
+                        }
+                        else if(role.equals("Doctor")) {
+                            new doctorMainpage();
+                        }
+                        else if(role.equals("Pharmacist")) {
+                            new pharmacyMainpage();
+                        }
+                        else if(role.equals("Lab Technician")) {
+                            new labMainpage();
+                        }
+                        else if(role.equals("Radiologist")) {
+                            new radiologyMainpage();
+                        }
+                        else{
+                            new helpdeskMainpage();
+                        }
+                    } else {
+                        JOptionPane message3 = new JOptionPane();
+                        message3.showMessageDialog(null, "Invalid User ID or Password", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                catch (Exception ev) {
+                    ev.printStackTrace();
+                }
             }
         }
-        if(e.getSource() == rButton){
+        else if (e.getSource() == rButton){
             userTextField.setText("");
             passwordField.setText("");
         }
     }
 }
+
+
+
+
+
+
