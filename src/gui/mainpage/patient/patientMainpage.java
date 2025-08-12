@@ -73,13 +73,6 @@ public class patientMainpage {
         messageHelpdesk.setBackground(new Color(0xeafffe));
         notification.setBackground(new Color(0xeafffe));
 
-        appointOverview.setBorder(BorderFactory.createEtchedBorder());
-        doctorInfo.setBorder(BorderFactory.createEtchedBorder());
-        billingInfo.setBorder(BorderFactory.createEtchedBorder());
-        messageHelpdesk.setBorder(BorderFactory.createEtchedBorder());
-        notification.setBorder(BorderFactory.createEtchedBorder());
-
-
         side.add(appointOverview);
         side.add(doctorInfo);
         side.add(billingInfo);

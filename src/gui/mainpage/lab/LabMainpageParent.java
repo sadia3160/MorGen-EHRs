@@ -1,28 +1,21 @@
-package gui.mainpage.pharmacy;
-
-import gui.mainpage.emerContacts;
+package gui.mainpage.lab;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class pharmacyMainpage implements ActionListener {
+public class LabMainpageParent {
 
     JFrame frame;
-    JPanel side, top, center;
+    JPanel side,top,center;
     JButton ecom, patient;
-
-    public pharmacyMainpage(){
-
-        frame = new JFrame("MorGen EHRs | Pharmacy Portal");
+    protected LabMainpageParent(String titleName) {
+        frame = new JFrame(titleName);
         ImageIcon iconLogo = new ImageIcon("src/gui/pictures/MLogoWB1.png");
         frame.setIconImage(iconLogo.getImage());
         frame.setLayout(new BorderLayout());
 
         createPanels();
         createButtons();
-        ecom.addActionListener(this);
 
         frame.add(side, BorderLayout.WEST);
         frame.add(top, BorderLayout.NORTH);
@@ -41,8 +34,8 @@ public class pharmacyMainpage implements ActionListener {
         top = new JPanel();
         center = new JPanel();
 
-        side.setBackground(new Color(0xf1f9ff));
-        top.setBackground(new Color(0xccecee));
+        side.setBackground(new Color(0xe7e9eb));
+        top.setBackground(new Color(0xb8bcb3));
         center.setBackground(Color.WHITE);
 
         side.setPreferredSize(new Dimension(200,200));
@@ -51,7 +44,6 @@ public class pharmacyMainpage implements ActionListener {
     }
 
     private void createButtons(){
-
         patient = new JButton("Patient Info");
         ecom = new JButton("Emergency Contacts");
 
@@ -61,22 +53,12 @@ public class pharmacyMainpage implements ActionListener {
         patient.setFocusable(false);
         ecom.setFocusable(false);
 
-        patient.setBackground(new Color(0xf1f9ff));
-        ecom.setBackground(new Color(0xf1f9ff));
+        patient.setBackground(new Color(0xe7e9eb));
+        ecom.setBackground(new Color(0xe7e9eb));
 
         side.add(patient);
         side.add(ecom);
+
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == ecom){
-            center.removeAll();
-            emerContacts ec = new emerContacts();
-            JScrollPane jsp = ec.myEmer();
-            center.add(jsp, BorderLayout.CENTER);
-            center.revalidate();
-            center.repaint();
-        }
-    }
 }

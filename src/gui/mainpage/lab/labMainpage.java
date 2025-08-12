@@ -1,64 +1,30 @@
 package gui.mainpage.lab;
 
+import gui.mainpage.emerContacts;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class labMainpage {
-    JFrame frame;
-    JPanel side,top,center;
+public class labMainpage extends LabMainpageParent implements ActionListener {
+
     public labMainpage(){
-        frame = new JFrame("MorGen EHRs | Laboratory Portal");
-        ImageIcon iconLogo = new ImageIcon("src/gui/pictures/MLogoWB1.png");
-        frame.setIconImage(iconLogo.getImage());
-        frame.setLayout(new BorderLayout());
 
-        createPanels();
-        createButtons();
+        super("MorGen EHRs | Laboratory Portal");
+        ecom.addActionListener(this);
 
-        frame.add(side, BorderLayout.WEST);
-        frame.add(top, BorderLayout.NORTH);
-        frame.add(center, BorderLayout.CENTER);
-
-        Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setSize(windowSize.width, windowSize.height);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void createPanels(){
-        side = new JPanel();
-        top = new JPanel();
-        center = new JPanel();
-
-        side.setBackground(new Color(0xe7e9eb));
-        top.setBackground(new Color(0xb8bcb3));
-        center.setBackground(Color.WHITE);
-
-        side.setPreferredSize(new Dimension(200,200));
-        top.setPreferredSize(new Dimension(150,150));
-        center.setPreferredSize(new Dimension(200,200));
-    }
-
-    private void createButtons(){
-        JButton patient = new JButton("Patient Info");
-        JButton ecom = new JButton("Emergency Contacts");
-
-        patient.setPreferredSize(new Dimension(200,35));
-        ecom.setPreferredSize(new Dimension(200,35));
-
-        patient.setFocusable(false);
-        ecom.setFocusable(false);
-
-        patient.setBorder(BorderFactory.createEtchedBorder());
-        ecom.setBorder(BorderFactory.createEtchedBorder());
-
-        patient.setBackground(new Color(0xe7e9eb));
-        ecom.setBackground(new Color(0xe7e9eb));
-
-        side.add(patient);
-        side.add(ecom);
-
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == ecom){
+            center.removeAll();
+            emerContacts ec = new emerContacts();
+            JScrollPane jsp = ec.myEmer();
+            center.add(jsp, BorderLayout.CENTER);
+            center.revalidate();
+            center.repaint();
+        }
     }
 }

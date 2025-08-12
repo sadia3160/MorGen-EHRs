@@ -1,11 +1,17 @@
 package gui.mainpage.radiology;
 
+import gui.mainpage.emerContacts;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class radiologyMainpage {
+public class radiologyMainpage implements ActionListener {
     JFrame frame;
     JPanel side,top,center;
+    JButton ecom, patient;
+
     public radiologyMainpage(){
         frame = new JFrame("MorGen EHRs | Radiology Portal");
         ImageIcon iconLogo = new ImageIcon("src/gui/pictures/MLogoWB1.png");
@@ -14,6 +20,7 @@ public class radiologyMainpage {
 
         createPanels();
         createButtons();
+        ecom.addActionListener(this);
 
         frame.add(side, BorderLayout.WEST);
         frame.add(top, BorderLayout.NORTH);
@@ -42,8 +49,8 @@ public class radiologyMainpage {
     }
 
     private void createButtons(){
-        JButton patient = new JButton("Patient Info");
-        JButton ecom = new JButton("Emergency Contacts");
+        patient = new JButton("Patient Info");
+        ecom = new JButton("Emergency Contacts");
 
         patient.setPreferredSize(new Dimension(200,35));
         ecom.setPreferredSize(new Dimension(200,35));
@@ -51,14 +58,23 @@ public class radiologyMainpage {
         patient.setFocusable(false);
         ecom.setFocusable(false);
 
-        patient.setBorder(BorderFactory.createEtchedBorder());
-        ecom.setBorder(BorderFactory.createEtchedBorder());
-
         patient.setBackground(new Color(0xe7e9eb));
         ecom.setBackground(new Color(0xe7e9eb));
 
         side.add(patient);
         side.add(ecom);
 
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == ecom){
+            center.removeAll();
+            emerContacts ec = new emerContacts();
+            JScrollPane jsp = ec.myEmer();
+            center.add(jsp, BorderLayout.CENTER);
+            center.revalidate();
+            center.repaint();
+        }
     }
 }

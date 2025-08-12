@@ -2,12 +2,12 @@ package database;
 
 import java.sql.*;
 
-public class ConLogin {
+public class dbCon {
 
     Connection con;
     public Statement statement;
 
-    public ConLogin() {
+    public dbCon() {
 
         String url = "jdbc:mysql://localhost:3306/ehrs_db";
         String userName = "root", password = "LifeStore";

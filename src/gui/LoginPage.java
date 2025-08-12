@@ -1,6 +1,6 @@
 package gui;
 
-import database.ConLogin;
+import database.dbCon;
 import gui.mainpage.admin.*;
 import gui.mainpage.doctor.*;
 import gui.mainpage.helpdesk.*;
@@ -8,6 +8,11 @@ import gui.mainpage.lab.*;
 import gui.mainpage.patient.*;
 import gui.mainpage.pharmacy.*;
 import gui.mainpage.radiology.*;
+
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -25,10 +30,12 @@ public class LoginPage implements ActionListener {
 
     public LoginPage(){
 
+        UIManager.put("Button.arc", 21);
         frame = new JFrame();
         frame.setTitle("MorGen EHR System Login");
         ImageIcon iconLogo = new ImageIcon("src/gui/pictures/MLogoWB1.png");
         frame.setIconImage(iconLogo.getImage());
+        frame.getContentPane().setBackground(new Color(0xe2e8ef));
 
         JLabel userLabel = new JLabel("User ID");
         userLabel.setBounds(35,50,100,25);
@@ -49,11 +56,14 @@ public class LoginPage implements ActionListener {
         rButton.setFocusable(false);
         lButton.addActionListener(this);
         rButton.addActionListener(this);
-        lButton.setBackground(Color.pink);
+        lButton.setBackground(new Color(0x4682b4));
+        lButton.setForeground(Color.WHITE);
+        rButton.setBackground(Color.lightGray);
 
-        Border border = BorderFactory.createRaisedSoftBevelBorder();
-        lButton.setBorder(border);
-        rButton.setBorder(border);
+
+//        Border border = BorderFactory.createRaisedSoftBevelBorder();
+//        lButton.setBorder(border);
+//        rButton.setBorder(border);
 
         frame.setSize(470,270);
         frame.setResizable(false);
@@ -85,8 +95,8 @@ public class LoginPage implements ActionListener {
             }
             else {
                 try {
-                    ConLogin cl = new ConLogin();
-                    String q = "SELECT * FROM login WHERE user_id = " + userID + " AND user_pass = \"" +pass+ "\"";
+                    dbCon cl = new dbCon();
+                    String q = "SELECT * FROM login WHERE user_id = \"" + userID + "\" AND user_pass = \"" +pass+ "\"";
                     ResultSet resultSet = cl.statement.executeQuery(q);
 
                     if (resultSet.next()) {
