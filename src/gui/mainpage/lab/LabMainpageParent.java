@@ -12,7 +12,7 @@ public class LabMainpageParent {
         frame = new JFrame(titleName);
         ImageIcon iconLogo = new ImageIcon("src/gui/pictures/MLogoWB1.png");
         frame.setIconImage(iconLogo.getImage());
-        frame.setLayout(new BorderLayout());
+        frame.setLayout(new BorderLayout(5,1));
 
         createPanels();
         createButtons();
@@ -34,13 +34,15 @@ public class LabMainpageParent {
         top = new JPanel();
         center = new JPanel();
 
-        side.setBackground(new Color(0xe7e9eb));
-        top.setBackground(new Color(0xb8bcb3));
+        side.setBackground(new Color(0xe7e9eb)); //0xf1f9ff));
+        top.setBackground(new Color(0x179aaf)); //0xb8bcb3));
         center.setBackground(Color.WHITE);
 
         side.setPreferredSize(new Dimension(200,200));
         top.setPreferredSize(new Dimension(150,150));
         center.setPreferredSize(new Dimension(200,200));
+
+        center.setLayout(new BorderLayout());
     }
 
     private void createButtons(){

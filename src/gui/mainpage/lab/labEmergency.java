@@ -1,4 +1,4 @@
-package gui.mainpage;
+package gui.mainpage.pharmacy;
 
 import database.dbCon;
 import gui.mainpage.doctor.doctorMainpage;
@@ -14,7 +14,7 @@ import java.awt.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class emerContacts {
+public class labEmergency {
 
     DefaultTableModel tableModel;
     JTable myTable;
@@ -52,9 +52,9 @@ public class emerContacts {
         tableModel.addColumn("Emergency Numbers");
 
         myTable = new JTable(tableModel);
-        myTable.setBackground(new Color(0xf0f0f0)); //0xf3f1ea));
-        myTable.setRowHeight(35);
-        myTable.setFont(new Font("Arial", Font.BOLD, 12));
+        myTable.setBackground(new Color(0xEAEDED)); //0xf0f0f0)); //0xf3f1ea));
+        myTable.setRowHeight(27);
+        myTable.setFont(new Font("Helvetica", Font.BOLD, 12));
         myTable.setEnabled(false);
         myTable.setShowGrid(true);
         myTable.setGridColor(Color.DARK_GRAY);

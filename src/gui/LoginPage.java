@@ -19,6 +19,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class LoginPage implements ActionListener {
@@ -97,7 +98,8 @@ public class LoginPage implements ActionListener {
                 try {
                     dbCon cl = new dbCon();
                     String q = "SELECT * FROM login WHERE user_id = \"" + userID + "\" AND user_pass = \"" +pass+ "\"";
-                    ResultSet resultSet = cl.statement.executeQuery(q);
+                    PreparedStatement pst = cl.con.prepareStatement(q);
+                    ResultSet resultSet = pst.executeQuery();
 
                     if (resultSet.next()) {
                         frame.dispose();
@@ -112,7 +114,7 @@ public class LoginPage implements ActionListener {
                             new doctorMainpage();
                         }
                         else if(role.equals("Pharmacist")) {
-                            new pharmacyMainpage();
+                            new pharmacyMainpage(userID);
                         }
                         else if(role.equals("Lab Technician")) {
                             new labMainpage();

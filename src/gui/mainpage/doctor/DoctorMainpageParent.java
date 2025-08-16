@@ -7,7 +7,7 @@ public class DoctorMainpageParent {
 
     JFrame frame;
     protected JPanel side,top,center;
-    protected JPanel topOfCenterArea, bottomOfCenterArea;
+    protected JPanel topOfCenterArea, bottomOfCenterArea, myMedicinePanel, mediButtonsPanel;
     protected JTextField searchBox;
     protected JButton home, patientCharts, lab, radiology, pharma; //doctor's
     protected  JButton history, digno, medi, immu, aller, pres, vSign , notes, save;

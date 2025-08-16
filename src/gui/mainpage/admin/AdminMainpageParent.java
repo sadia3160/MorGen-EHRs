@@ -6,10 +6,13 @@ import java.awt.*;
 public class AdminMainpageParent {
 
     JFrame frame;
-    JPanel side,top,center, temp;
+    JPanel side,top,center, temp, ap;
     JButton appointScheduling, patientRegistration, billingInfo, doctorList, emerContacts, addPat;
+    JButton newAppointment, createBill, saveA, cancelA;
     JRadioButton in, out;
     JDialog dialog1, dialog2, dialog3;
+    JComboBox deptSelection;
+    AppointmentForm apf;
 
     protected AdminMainpageParent(String titleName) {
 

@@ -1,16 +1,23 @@
 package gui.mainpage.doctor;
 
+import com.mysql.cj.util.StringUtils;
+import database.dbCon;
+import gui.mainpage.admin.AppointmentForm;
+import gui.mainpage.admin.PatientEntry;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
 
 public class doctorMainpage extends DoctorMainpageParent implements ActionListener {
 
     String currentSideBar = "", currentSubButton = "";
     JLabel label;
-    JScrollPane scroll;
+    JScrollPane scroll, temp1;
     JTextArea docNotes;
+    PharmacyPage pp;
 
     public doctorMainpage(){
 
@@ -19,7 +26,13 @@ public class doctorMainpage extends DoctorMainpageParent implements ActionListen
         //add action listener
         patientCharts.addActionListener(this);
         home.addActionListener(this);
-
+        pharma.addActionListener(this);
+        pp = new PharmacyPage();
+        pp.declareMediButtons();
+        pp.newData.addActionListener(this);
+        pp.addData.addActionListener(this);
+        pp.updateData.addActionListener(this);
+        pp.deleteData.addActionListener(this);
     }
 
     @Override
@@ -55,6 +68,43 @@ public class doctorMainpage extends DoctorMainpageParent implements ActionListen
         if(e.getSource() == home){
             sideBarCheck("home");
         }
+        if(e.getSource() == save){
+            //get data from text area and save/insert it to the database
+            getData();
+        }
+        if(e.getSource() == pharma){
+           sideBarCheck("pharma");
+        }
+        if(e.getSource() == pp.newData){ //new row
+            pp.newMedicine();
+            center.revalidate();
+            center.repaint();
+        }
+        if(e.getSource() == pp.addData){ //add to database
+//            for(int i=0; i < pp.table.getRowCount(); i++) {
+//                String medicine = pp.table.getValueAt(i,0).toString();
+//                String quantity = pp.table.getValueAt(i,1).toString();
+//                pp.addMedicine(pp.searchPatient.getText(), medicine, quantity);
+//            }
+            int getSelectedRow = pp.table.getSelectedRow();
+            String medicine = pp.table.getValueAt(getSelectedRow,0).toString();
+            String quantity = pp.table.getValueAt(getSelectedRow,1).toString();
+            pp.addMedicine(pp.searchPatient.getText(), medicine, quantity);
+        }
+        if(e.getSource() == pp.updateData){ //updata data in database
+            for(int i=0; i < pp.table.getRowCount(); i++) {
+                pp.table.setValueAt("",i,0);
+                pp.table.setValueAt("",i,1);
+            }
+            center.revalidate();
+            center.repaint();
+        }
+        if(e.getSource() == pp.deleteData){ //delete data from database
+            int getSelectedRow = pp.table.getSelectedRow();
+            String medicine = pp.table.getValueAt(getSelectedRow,0).toString();
+            String quantity = pp.table.getValueAt(getSelectedRow,1).toString();
+            pp.deleteMedicine(pp.searchPatient.getText(), medicine, quantity);
+        }
     }
 
     private void sideBarCheck(String sidebar){
@@ -70,6 +120,9 @@ public class doctorMainpage extends DoctorMainpageParent implements ActionListen
         if(currentSideBar.equals("home")){
             showHomeContent();
         }
+        if(currentSideBar.equals("pharma")){
+            pharmaPage();
+        }
         center.revalidate();
         center.repaint();
     }
@@ -82,10 +135,16 @@ public class doctorMainpage extends DoctorMainpageParent implements ActionListen
             bottomOfCenterArea.removeAll();
             //center.remove(bottomOfCenterArea); don't remove from center, remove the contents of panel
         }
-        currentSubButton = button;
-        showContent(currentSubButton);
-        center.revalidate();
-        center.repaint();
+        String pID = searchBox.getText();
+        if(StringUtils.isEmptyOrWhitespaceOnly(pID) || StringUtils.isNullOrEmpty(pID)){
+            JOptionPane.showMessageDialog(null, "Enter Patient ID", "Error", JOptionPane.ERROR_MESSAGE, null);
+        }
+        else{
+            currentSubButton = button;
+            showContent(currentSubButton);
+            center.revalidate();
+            center.repaint();
+        }
     }
 
     private void patientChartsPage(){
@@ -126,6 +185,7 @@ public class doctorMainpage extends DoctorMainpageParent implements ActionListen
 
         searchBox = new JTextField();
         searchBox.setPreferredSize(new Dimension(100, 23));
+        searchBox.setBackground(new Color(0xeff9fe));
         gbc.gridx = 0;
         gbc.gridy = 0;
         center.add(searchBox, gbc);
@@ -203,7 +263,9 @@ public class doctorMainpage extends DoctorMainpageParent implements ActionListen
         docNotes.setBackground(new Color(0xe3e8ea));
 
         scroll = new JScrollPane(docNotes, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-       // scroll.setPreferredSize(new Dimension(500,500));
+        //scroll.setPreferredSize(new Dimension(500,500));
+        //inserting my text area to a JscrollPane!
+
 
         label = new JLabel();
         label.setText(labelText);
@@ -240,6 +302,8 @@ public class doctorMainpage extends DoctorMainpageParent implements ActionListen
        // timer.setBounds(150,200, 100, 35);
         timer.setBackground(Color.LIGHT_GRAY);
         timer.setFont(new Font("Verdana", Font.BOLD, 11));
+
+
         p2.add(timer);
         p2.setBorder(BorderFactory.createEtchedBorder());
 
@@ -263,5 +327,143 @@ public class doctorMainpage extends DoctorMainpageParent implements ActionListen
         gbc.fill = GridBagConstraints.BOTH;
 
         center.add(homePanel,gbc);
+    }
+
+    private void getData(){
+
+        String patientID = searchBox.getText();
+        String docNotesText = docNotes.getText();
+        dbCon databaseConnection = new dbCon();
+
+
+            int k = 0;
+            if (currentSubButton.equals("history")) {
+
+                try {
+
+                    String myQuery = "INSERT INTO medicalHistory (user_id, val) VALUES (?,?)";
+                    PreparedStatement pst = databaseConnection.con.prepareStatement(myQuery);
+                    pst.setString(1, patientID);
+                    pst.setString(2, docNotesText);
+                    k = pst.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (currentSubButton.equals("digno")) {
+
+                try {
+
+                    String myQuery = "INSERT INTO patDiagnosis (user_id, val) VALUES (?,?)";
+                    PreparedStatement pst = databaseConnection.con.prepareStatement(myQuery);
+                    pst.setString(1, patientID);
+                    pst.setString(2, docNotesText);
+                    k = pst.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (currentSubButton.equals("medi")) {
+
+                try {
+
+                    String myQuery = "INSERT INTO patMedications (user_id, val) VALUES (?,?)";
+                    PreparedStatement pst = databaseConnection.con.prepareStatement(myQuery);
+                    pst.setString(1, patientID);
+                    pst.setString(2, docNotesText);
+                    k = pst.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (currentSubButton.equals("immu")) {
+
+                try {
+
+                    String myQuery = "INSERT INTO patImmuRec (user_id, val) VALUES (?,?)";
+                    PreparedStatement pst = databaseConnection.con.prepareStatement(myQuery);
+                    pst.setString(1, patientID);
+                    pst.setString(2, docNotesText);
+                    k = pst.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (currentSubButton.equals("aller")) {
+
+                try {
+
+                    String myQuery = "INSERT INTO patAller (user_id, val) VALUES (?,?)";
+                    PreparedStatement pst = databaseConnection.con.prepareStatement(myQuery);
+                    pst.setString(1, patientID);
+                    pst.setString(2, docNotesText);
+                    k = pst.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (currentSubButton.equals("pres")) {
+
+                try {
+
+                    String myQuery = "INSERT INTO patEPres (user_id, val) VALUES (?,?)";
+                    PreparedStatement pst = databaseConnection.con.prepareStatement(myQuery);
+                    pst.setString(1, patientID);
+                    pst.setString(2, docNotesText);
+                    k = pst.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (currentSubButton.equals("vSign")) {
+
+                try {
+
+                    String myQuery = "INSERT INTO patVSign (user_id, val) VALUES (?,?)";
+                    PreparedStatement pst = databaseConnection.con.prepareStatement(myQuery);
+                    pst.setString(1, patientID);
+                    pst.setString(2, docNotesText);
+                    k = pst.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (currentSubButton.equals("notes")) {
+
+                try {
+
+                    String myQuery = "INSERT INTO patNotes (user_id, val) VALUES (?,?)";
+                    PreparedStatement pst = databaseConnection.con.prepareStatement(myQuery);
+                    pst.setString(1, patientID);
+                    pst.setString(2, docNotesText);
+                    k = pst.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(k > 0){
+                JOptionPane.showMessageDialog(null, "Data saved successfully!", "Message", JOptionPane.INFORMATION_MESSAGE,null);
+            }
+    }
+    private void pharmaPage(){
+
+        myMedicinePanel = new JPanel(new BorderLayout());
+        mediButtonsPanel = pp.getAllButtons();
+        temp1 = pp.myMedicines();
+        myMedicinePanel.add(mediButtonsPanel, BorderLayout.NORTH);
+        myMedicinePanel.add(temp1, BorderLayout.CENTER);
+
+        JPanel whole = new JPanel(new BorderLayout());
+        whole.add(mediButtonsPanel, BorderLayout.NORTH);
+        whole.add(myMedicinePanel, BorderLayout.CENTER);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        center.add(whole, gbc);
     }
 }

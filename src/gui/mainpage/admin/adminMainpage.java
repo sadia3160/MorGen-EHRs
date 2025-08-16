@@ -1,18 +1,29 @@
 package gui.mainpage.admin;
 
+import gui.mainpage.admin.buttons.btn1;
+import gui.mainpage.admin.buttons.btn2;
+import gui.mainpage.admin.buttons.btn3;
 import gui.mainpage.emerContacts;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class adminMainpage extends AdminMainpageParent implements ActionListener {
 
-    JButton newAppointment, createBill;
+    JButton newAppointment, createBill, saveA, cancelA, saveP, cancelP;
     JComboBox deptSelection;
+    JPanel ap, jp, mydocPanel, temp;
+    AppointmentForm apf; PatientEntry pe2;
+    JTextField wardt, roomt;
+    JButton add, update,delete;
+    InvoicesPrepare ip;
+    getBillTable bill;
 
-    public adminMainpage(){
+    public adminMainpage(){ //for Administration's Main Page
 
         super("MorGen EHRs | Admin Portal");
 
@@ -51,27 +62,58 @@ public class adminMainpage extends AdminMainpageParent implements ActionListener
             showBillForm();
         }
         if(e.getSource() == doctorList){
-            showDoctorListPage();
+            center.removeAll();
+            deptSelection = new JComboBox(depts);
+            deptSelection.setEditable(true);
+            deptSelection.addActionListener(this);
+
+            JPanel temp = new JPanel();
+            temp.setLayout(new BorderLayout());
+            temp.add(deptSelection, BorderLayout.WEST);
+            center.add(temp, BorderLayout.NORTH);
+
+            mydocPanel = new JPanel();
+            String selectedDept = (String)deptSelection.getSelectedItem();
+            showDoctorListPage(selectedDept);
         }
         if(e.getSource() == newAppointment){
             addNewAppointment();
         }
+        if(e.getSource() == saveA){
+            saveAppointment();
+        }
+        if(e.getSource() == cancelA){
+            dialog3.dispose();
+        }
+        if(e.getSource() == cancelP){
+            dialog1.dispose();
+        }
+        if(e.getSource() == saveP){
+            savePatientData();
+        }
+        if(e.getSource() == deptSelection){
+
+            String selectedDept = (String)deptSelection.getSelectedItem();
+            showDoctorListPage(selectedDept);
+        }
+        if(e.getSource() == add){
+            bill = new getBillTable();
+            //bill.addRow();
+            String pid = ip.getID();
+            String itm = ip.getItm();
+            int quan = ip.getQuan();
+            int pri = ip.getPri();
+            bill.addItems(pid,itm,quan,pri);
+        }
     }
 
-    private void patientButton(){
+    private void patientButton(){   //For Patient Entry
 
         center.removeAll();
-
-        addPat = new JButton("Add Patient");
+        btn1 b1  = new btn1();
+        addPat = b1.getButton();
         addPat.addActionListener(this);
-        addPat.setLayout(new BorderLayout());
-        addPat.setPreferredSize(new Dimension(100, 31));
-        addPat.setFocusable(false);
-        addPat.setBackground(Color.LIGHT_GRAY); //(new Color(0x237fb7));
-        addPat.setForeground(Color.WHITE);
-        addPat.setFont(new Font(null, Font.BOLD, 13));
         center.add(addPat, BorderLayout.PAGE_START);
-
         center.revalidate();
         center.repaint();
     }
@@ -79,23 +121,13 @@ public class adminMainpage extends AdminMainpageParent implements ActionListener
     private void appointSchButton(){
 
         center.removeAll();
-
         Scheduling appoint = new Scheduling();
         temp = appoint.createCal();
-
-
-        newAppointment = new JButton("New Appointment");
-        newAppointment.setBackground(Color.LIGHT_GRAY); //(new Color(0x237fb7));
-        newAppointment.setForeground(Color.WHITE);
+        btn2 b2 = new btn2();
+        newAppointment = b2.getButton();
         newAppointment.addActionListener(this);
-        newAppointment.setLayout(new BorderLayout());
-        newAppointment.setPreferredSize(new Dimension(100, 31));
-        newAppointment.setFocusable(false);
-        newAppointment.setFont(new Font(null, Font.BOLD, 13));
-
         center.add(temp, BorderLayout.WEST);
         center.add(newAppointment, BorderLayout.NORTH);
-
         center.revalidate();
         center.repaint();
         //Solve the problem
@@ -103,8 +135,8 @@ public class adminMainpage extends AdminMainpageParent implements ActionListener
 
     private void addPatButton(){
 
-        PatientEntry pe2 = new PatientEntry();
-        JPanel jp = pe2.createJPanel();
+        pe2 = new PatientEntry();
+        jp = pe2.createJPanel();
 
         dialog1 = new JDialog(frame, "Patient Registration Form", true);
         dialog1.setLayout(null);
@@ -119,12 +151,16 @@ public class adminMainpage extends AdminMainpageParent implements ActionListener
 
         JLabel ward = new JLabel("Ward");
         ward.setBounds(450, 190, 150, 15);
-        JTextField wardt = new JTextField();
+        wardt = new JTextField();
         wardt.setBounds(450, 205 , 150, 30);
         JLabel room = new JLabel("Room");
         room.setBounds(450, 240, 150, 15);
-        JTextField roomt = new JTextField();
+        roomt = new JTextField();
         roomt.setBounds(450,255, 150, 30);
+
+        createPatientFormButton();
+        jp.add(saveP);
+        jp.add(cancelP);
 
         dialog1.add(ward);
         dialog1.add(wardt);
@@ -173,8 +209,20 @@ public class adminMainpage extends AdminMainpageParent implements ActionListener
 
     private void showBillForm(){
 
-        InvoicesPrepare ip = new InvoicesPrepare();
-        JPanel temp = ip.invoiceForm();
+        ip = new InvoicesPrepare();
+        temp = ip.invoiceForm();
+
+        //Create table and interact with database!
+        add = ip.getAdd();
+        update = ip.getUpdate();
+        delete = ip.getDelete();
+        add.addActionListener(this);
+        update.addActionListener(this);
+        delete.addActionListener(this);
+
+        temp.add(add);
+        temp.add(update);
+        temp.add(delete);
 
         dialog2 = new JDialog(frame, "Invoices Form", true);
         dialog2.setLayout(null);
@@ -183,6 +231,7 @@ public class adminMainpage extends AdminMainpageParent implements ActionListener
         dialog2.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         dialog2.add(temp);
+
         dialog2.setSize(700,750);
         dialog2.setLocationRelativeTo(null);
 
@@ -192,64 +241,27 @@ public class adminMainpage extends AdminMainpageParent implements ActionListener
 //        center.repaint();
     }
 
-    private void showDoctorListPage(){
+    private void showDoctorListPage(String selectedDept){
 
-        center.removeAll();
+        if(mydocPanel != null){
+            mydocPanel.removeAll();
+        }
 
-        String[] depts = { "Anesthesiology Specialist",
-                "Burn Trauma Plastic & General Surgery",
-                "Cancer Specialist",
-                "Cardiology Specialist",
-                "Cardiovascular & Thoracic Surgeon",
-                "Chest Lung & Esophagus Surgeon",
-                "Child Specialist",
-                "Colorectal Surgery Specialist",
-                "Dental Specialist",
-                "Dermatology Specialist",
-                "Diabetes & Hormone Specialist",
-                "Endocrinology Department",
-                "Eye Specialist",
-                "Gastroenterology Specialist",
-                "General & Laparoscopic Surgery Specialist",
-                "General Practitioner",
-                "Gynecology & Obstetrics Specialist",
-                "Hematology (Blood) Specialist",
-                "Hepatobiliary & Pancreatic Surgery",
-                "Infertility Specialist",
-                "Kidney Specialist",
-                "Liver Specialist",
-                "Medicine Specialist",
-                "Neonatology",
-                "Nephrology Department",
-                "Neurology/Neuromedicine Specialist",
-                "Neurosurgery Specialist",
-                "Oncology Specialist",
-                "Oncology Surgery",
-                "Orthopedics Specialists & Trauma Surgeon",
-                "Pediatric Surgery Specialist",
-                "Physical Medicine Specialist",
-                "Plastic Surgery Specialist",
-                "Psychiatry (Mental) Specialist",
-                "Rheumatology Specialist",
-                "Urology Specialist",
-                "Vascular Surgery Specialist" };
+        DoctorList lis = new DoctorList();
+        JScrollPane test = lis.myDoctorList(selectedDept);
+        test.setPreferredSize(new Dimension(1271,591));
+        mydocPanel.add(test);
 
-        deptSelection = new JComboBox(depts);
-        deptSelection.setEditable(true);
-
-        JPanel temp = new JPanel();
-        temp.setLayout(new BorderLayout());
-        temp.add(deptSelection, BorderLayout.WEST);
-
-        center.add(temp, BorderLayout.NORTH);
+        center.add(mydocPanel, BorderLayout.CENTER);
 
         center.revalidate();
         center.repaint();
     }
 
+
     private void addNewAppointment(){
-        AppointmentForm apf = new AppointmentForm();
-        JPanel ap = apf.appointForm();
+        apf = new AppointmentForm();
+        ap = apf.appointForm();
 
         dialog3 = new JDialog(frame, "Appointment Registration Form", true);
         dialog3.setLayout(null);
@@ -257,14 +269,73 @@ public class adminMainpage extends AdminMainpageParent implements ActionListener
         dialog3.setIconImage(icon.getImage());
         dialog3.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
+        createAppointFormButtons();
+
         JLabel myLogo =  apf.getImage();
-        myLogo.setBounds(205, 51, 251, 41);
+        myLogo.setBounds(195, 41, 171, 35);
         myLogo.setBorder(BorderFactory.createEtchedBorder());
 
         dialog3.add(myLogo);
+        ap.add(saveA);
+        ap.add(cancelA);
         dialog3.add(ap);
-        dialog3.setSize(700,750);
+        dialog3.setSize(555,555);
         dialog3.setLocationRelativeTo(null);
         dialog3.setVisible(true);
     }
+
+    private void createAppointFormButtons(){
+            btn3 b3 = new btn3();
+            cancelA = b3.getCancelA();
+            saveA = b3.getSaveA();
+            cancelA.addActionListener(this);
+            saveA.addActionListener(this);
+    }
+
+    private void createPatientFormButton(){
+            btn3 ob = new btn3();
+            cancelP = ob.getCancelP();
+            saveP = ob.getSaveP();
+            cancelP.addActionListener(this);
+            saveP.addActionListener(this);
+    }
+
+    private void saveAppointment(){
+        //patID, appID, appDate, appTime, docInCharge
+        String pid = apf.getID();
+        String aid = apf.appointID();
+        Date appo = apf.getAppointDate();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+        String adate = sdf.format(appo);
+        String atime = apf.getAppointTime();
+        String docInC = apf.getDocInCharge();
+        //Date check!
+        saveAppointmentData apd = new saveAppointmentData(dialog3,pid,aid,adate,atime,docInC);
+    }
+
+    private void savePatientData(){
+
+        String pid = pe2.getPatID();
+        String pnm = pe2.getPatName();
+        String bdt = pe2.getBirthDate();
+        String bgrp = pe2.getBloodGroup();
+        String gndr = pe2.getGender();
+        String pphn = pe2.getPatPhone();
+        String gphn = pe2.getGurPhone();
+        String addr = pe2.getAddress();
+        String prf = pe2.getPrf();
+
+        //notes, patType, ward, room
+        String w = wardt.getText();
+        String r = roomt.getText();
+        String ptype;
+        if(in.isSelected()) ptype = "Inpatient";
+        else ptype = "Outpatient";
+
+        String notes = pe2.getNotes();
+        savePatData spd = new savePatData(dialog1,pid,pnm,bdt,bgrp,gndr,pphn,gphn,addr,prf,w,r,ptype,notes);
+    }
+
+    getDeptString obj = new getDeptString();
+    String[] depts = obj.getDepts();
 }

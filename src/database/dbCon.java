@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class dbCon {
 
-    Connection con;
+    public Connection con;
     public Statement statement;
 
     public dbCon() {
@@ -15,7 +15,7 @@ public class dbCon {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver"); //1. registered the Driver class
             con = DriverManager.getConnection(url, userName, password); //2. created connection
-            statement = con.createStatement(); //3. created statement
+           // statement = con.createStatement(); //3. created statement
             /*
                 ResultSet rs = statement.executeQuery("SELECT * FROM login"); //4. executed queries
                 while (rs.next()) {

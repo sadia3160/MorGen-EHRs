@@ -4,6 +4,8 @@ import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class InvoicesPrepare {
 
@@ -12,8 +14,9 @@ public class InvoicesPrepare {
         JTextField idT;
         JDateChooser admitT, relT;
         JComboBox docT;
-        JButton cancel;
+        JButton cancel, add, update, delete;
         JComboBox decide;
+        getBillTable gbt;
 
         protected JPanel invoiceForm(){
             panel = new JPanel();
@@ -21,6 +24,13 @@ public class InvoicesPrepare {
             panel.setBackground(new Color(0xf0f0f0));
 
             createLabels();
+
+            gbt = new getBillTable(); //fetch item, quantity, price
+            JScrollPane billScroll = gbt.getBillScroll();
+            //billScroll.setLayout(null);
+            billScroll.setBounds(30,270,611,350);
+
+            panel.add(billScroll);
 
             panel.add(id);
             panel.add(idT);
@@ -84,5 +94,42 @@ public class InvoicesPrepare {
             decide.setBackground(Color.LIGHT_GRAY);
             decide.setForeground(Color.DARK_GRAY);
             decide.setFont(new Font(null, Font.BOLD, 13));
+        }
+
+        public JButton getAdd() {
+            add = new JButton("Add");
+            add.setBounds(445, 229, 55, 21);
+            add.setFont(new Font("Open Sans", Font.BOLD, 9));
+            return add;
+        }
+        public JButton getUpdate() {
+            update = new JButton("Update");
+            update.setBounds(505, 229, 60, 21);
+            update.setFont(new Font("Open Sans", Font.BOLD, 9));
+            return update;
+        }
+        public JButton getDelete() {
+            delete = new JButton("Delete");
+            delete.setBounds(570, 229, 60, 21);
+            delete.setFont(new Font("Open Sans", Font.BOLD, 9));
+            return delete;
+        }
+
+//            String patientID = patID;
+//            String item = it;
+//            int quantity = quan;
+//            int price = pr;
+
+        public String getID(){
+            return idT.getText();
+        }
+        public String getItm(){
+            return gbt.getItem();
+        }
+        public int getQuan(){
+            return gbt.getQuantity();
+        }
+        public int getPri(){
+            return gbt.getPrice();
         }
 }
